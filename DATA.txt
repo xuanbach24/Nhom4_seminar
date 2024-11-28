@@ -1,0 +1,81 @@
+CREATE DATABASE QuanLyPhongBan;
+USE QuanLyPhongBan;
+
+-- Bảng Phòng Ban
+CREATE TABLE PhongBan (
+    MaPhongBan INT PRIMARY KEY,
+    TenPhongBan VARCHAR(100) NOT NULL,
+    DiaDiem VARCHAR(100)
+);
+
+-- Bảng Nhân Viên
+CREATE TABLE NhanVien (
+    MaNhanVien INT PRIMARY KEY,
+    Ho VARCHAR(50) NOT NULL,
+    Ten VARCHAR(50),
+    NgayThue DATE,
+    MaPhongBan INT,
+    FOREIGN KEY (MaPhongBan) REFERENCES PhongBan(MaPhongBan)
+);
+
+-- Bảng Dự Án
+CREATE TABLE DuAn (
+    MaDuAn INT PRIMARY KEY,
+    TenDuAn VARCHAR(100) NOT NULL,
+    NgayBatDau DATE,
+    NgayKetThuc DATE,
+    MaPhongBan INT,
+    FOREIGN KEY (MaPhongBan) REFERENCES PhongBan(MaPhongBan)
+);
+
+-- Bảng Nhân Viên - Dự Án (Bảng trung gian)
+CREATE TABLE NhanVien_DuAn (
+    MaNhanVien INT,
+    MaDuAn INT,
+    VaiTro VARCHAR(50),
+    PRIMARY KEY (MaNhanVien, MaDuAn),
+    FOREIGN KEY (MaNhanVien) REFERENCES NhanVien(MaNhanVien),
+    FOREIGN KEY (MaDuAn) REFERENCES DuAn(MaDuAn)
+);
+INSERT INTO PhongBan (MaPhongBan, TenPhongBan, DiaDiem)
+VALUES 
+    (1, N'Phòng Kỹ Thuật', N'Hà Nội'),
+    (2, N'Phòng Nhân Sự', N'TP. Hồ Chí Minh'),
+    (3, N'Phòng Marketing', N'Đà Nẵng'),
+    (4, N'Phòng Tài Chính', N'Hải Phòng'),
+    (5, N'Phòng Kinh Doanh', N'Cần Thơ'),
+    (6, N'Phòng IT', N'Nha Trang');
+INSERT INTO NhanVien (MaNhanVien, Ho, Ten, NgayThue, MaPhongBan)
+VALUES 
+    (1, N'Nguyễn', N'An', '2022-01-15', 1),
+    (2, N'Trần', N'Bình', '2021-06-20', 2),
+    (3, N'Lê', N'Châu', '2023-03-05', 3),
+    (4, N'Phạm', N'Dũng', '2020-09-12', 4),
+    (5, N'Huỳnh', N'Em', '2021-11-25', 5),
+    (6, N'Đinh', N'Phúc', '2019-07-30', 1),
+    (7, N'Võ', N'Quang', '2023-01-03', 6);
+INSERT INTO DuAn (MaDuAn, TenDuAn, NgayBatDau, NgayKetThuc, MaPhongBan)
+VALUES 
+    (1, N'Dự Án A', '2023-01-01', '2023-12-31', 1),
+    (2, N'Dự Án B', '2022-05-10', '2023-03-30', 2),
+    (3, N'Dự Án C', '2023-07-15', NULL, 3),
+    (4, N'Dự Án D', '2023-04-01', '2023-09-15', 4),
+    (5, N'Dự Án E', '2022-12-01', '2023-11-30', 5),
+    (6, N'Dự Án F', '2023-06-20', NULL, 6);
+INSERT INTO NhanVien_DuAn (MaNhanVien, MaDuAn, VaiTro)
+VALUES 
+    (1, 1, N'Trưởng nhóm'),
+    (2, 2, N'Nhân viên'),
+    (3, 3, N'Nhân viên'),
+    (4, 4, N'Trưởng nhóm'),
+    (5, 5, N'Nhân viên'),
+    (6, 1, N'Nhân viên'),
+    (7, 6, N'Quản lý dự án'),
+    (1, 5, N'Thành viên'),
+    (2, 3, N'Thành viên');
+
+
+	SELECT pb.TenPhongBan, COUNT(nv.MaNhanVien) AS SoLuongNhanVien  
+                           FROM PhongBan pb
+                           LEFT JOIN NhanVien nv ON pb.MaPhongBan = nv.MaPhongBan
+                           GROUP BY pb.TenPhongBan
